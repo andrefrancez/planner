@@ -1,12 +1,20 @@
 const { v4: uuidv4 } = require('uuid')
+const db = require('../db')
 
-let reminders = [];
-
-const getAllReminders = (req, res) => {
-    res.status(200).json(reminders)
+const getAllReminders = async (req, res) => {
+    try {
+        const [rows] = await db.query(
+            'SELECT * FROM tb_reminders'
+        )
+        res.status(200).json(rows)
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
+    }
 }
 
-const createReminders = (req, res) => {
+const createReminders = async (req, res) => {
     const { title, priority } = req.body
 
     if (!title)
@@ -15,50 +23,78 @@ const createReminders = (req, res) => {
                 message: 'Titulo é obrigatórios!'
             })
 
-    const newReminder = {
-        id: uuidv4(),
-        title,
-        priority: priority || 'low'
-    }
+    const reminderId = uuidv4()
 
-    reminders.push(newReminder)
-    res.status(201).json(newReminder)
+    try {
+        const [result] = await db.execute(
+            'INSERT INTO tb_reminders (id, title, priority) VALUES (?, ?, ?)',
+            [reminderId, title, priority || 'baixa']
+        )
+
+        const newReminder = {
+            id: reminderId,
+            title,
+            priority: priority || 'baixa'
+        }
+
+        res.status(201).json(newReminder)
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
+    }
 }
 
-const updateReminder = (req, res) => {
+const updateReminder = async (req, res) => {
     const { id } = req.params
     const { title, priority } = req.body
 
-    const reminderId = reminders.findIndex(r => r.id === id)
+    try {
+        const [result] = await db.execute(
+            'UPDATE tb_reminders SET title = ?, priority = ? WHERE id = ?',
+            [title, priority || 'baixa', id]
+        )
 
-    if (reminderId === -1)
-        return res.status(404).json({
-            message: 'Id não encontrado!'
+        if (result.affectedRows === 0)
+            return res.status(404).json({
+                message: 'Lembrete não encontrado!'
+            })
+
+        res.status(200).json({
+            message: 'Lembrete atualizado!'
         })
-
-    const updatedReminder = {
-        id,
-        title: title || reminders[reminderId].title,
-        priority: priority || reminders[reminderId].priority
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
     }
-
-    reminders[reminderId] = updatedReminder
-    res.send({
-        message: 'Lembrete atualizado!'
-    })
 }
 
-const deleteReminder = (req, res) => {
+const deleteReminder = async (req, res) => {
     const { id } = req.params
 
-    const reminderId = reminders.findIndex(r => r.id === id)
-    if (reminderId === -1)
-        return res.status(404).json({
-            message: 'Id não encontrado!'
-        })
+    try {
+        const [observationsResult] = await db.execute(
+            'DELETE FROM observations_db.tb_observations WHERE reminder_id = ?',
+            [id]
+        )
 
-    reminders.splice(reminderId, 1)
-    res.status(204).send()
+        const [result] = await db.execute(
+            'DELETE FROM tb_reminders WHERE id = ?',
+            [id]
+        )
+
+        if (result.affectedRows === 0)
+            return res.status(404).json({
+                message: 'Lembrete não encontrado!'
+            })
+
+        res.status(204).send()
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
+    }
 }
 
 module.exports = {

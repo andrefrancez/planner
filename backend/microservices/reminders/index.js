@@ -1,9 +1,12 @@
 const express = require('express')
 const cors = require('cors')
-const remindersRoutes = require('./routes/RemindersRoute.js')
+const remindersRoutes = require('./routes/remindersRoute.js')
+//const {connectRabbitMQ, publishMessage} = require('./rabbit.js')
 
 const app = express()
 app.use(express.json());
+
+//connectRabbitMQ()
 
 app.use(remindersRoutes)
 
