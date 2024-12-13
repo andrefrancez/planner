@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid')
 const db = require('../db')
+const {getChannel} = require('../../../config/rabbitmq.js')
 
 const getAllReminders = async (req, res) => {
     try {
@@ -37,6 +38,20 @@ const createReminders = async (req, res) => {
             priority: priority || 'baixa'
         }
 
+        // RabbitMQ
+        const channel = getChannel()
+        const event = {
+            eventType: 'REMINDER_CREATE',
+            timestamp: new Date().toISOString(),
+            payload: newReminder
+        }
+
+        channel.publish(
+            'reminders',
+            '',
+            Buffer.from(JSON.stringify(event))
+        )
+
         res.status(201).json(newReminder)
     } catch (error) {
         res.status(500).json({
@@ -59,6 +74,24 @@ const updateReminder = async (req, res) => {
             return res.status(404).json({
                 message: 'Lembrete não encontrado!'
             })
+
+        // RabbitMQ
+        const channel = getChannel()
+        const event = {
+            eventType: 'REMINDER_UPDATE',
+            timestamp: new Date().toISOString(),
+            payload: {
+                id,
+                title,
+                priority
+            }
+        }
+
+        channel.publish(
+            'reminders',
+            '',
+            Buffer.from(JSON.stringify(event))
+        )
 
         res.status(200).json({
             message: 'Lembrete atualizado!'
@@ -88,6 +121,20 @@ const deleteReminder = async (req, res) => {
             return res.status(404).json({
                 message: 'Lembrete não encontrado!'
             })
+
+        // Rabbit
+        const channel = getChannel()
+        const event = {
+            eventType: 'REMINDER_DELETE',
+            timestamp: new Date().toISOString(),
+            payload: {reminderId: id}
+        }
+
+        channel.publish(
+            'reminders',
+            '',
+            Buffer.from(JSON.stringify(event))
+        )
 
         res.status(204).send()
     } catch (error) {

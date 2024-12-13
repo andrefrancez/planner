@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid')
 const db = require('../db')
+const {getChannel} = require('../../../config/rabbitmq.js')
 
 const createObservation = async (req, res) => {
     const { description } = req.body
@@ -34,6 +35,19 @@ const createObservation = async (req, res) => {
             description,
             reminderId
         }
+
+        const channel = getChannel()
+        const event = {
+            eventType: 'OBSERVATION_CREATE',
+            timestamp: new Date().toISOString(),
+            payload: newObservation
+        }
+
+        channel.publish(
+            'observations',
+            '',
+            Buffer.from(JSON.stringify(event))
+        )
 
         res.status(201).json(newObservation)
     } catch (error) {
@@ -82,6 +96,22 @@ const updateObservation = async (req, res) => {
             })
         }
 
+        const channel = getChannel()
+        const event = {
+            eventType: 'OBSERVATION_UPDATE',
+            timestamp: new Date().toISOString(),
+            payload: {
+                id,
+                description
+            }
+        }
+
+        channel.publish(
+            'observations',
+            '',
+            Buffer.from(JSON.stringify(event))
+        )
+
         res.status(200).json({
             message: 'Observação atualizada!'
         })
@@ -106,6 +136,22 @@ const deleteObservation = async (req, res) => {
                 message: 'Observação não encontrada!'
             })
         }
+
+        const channel = getChannel()
+        const event = {
+            eventType: 'OBSERVATION_DELETE',
+            timestamp: new Date().toISOString(),
+            payload: {
+                id
+            }
+        }
+
+        channel.publish(
+            'observations',
+            '',
+            Buffer.from(JSON.stringify(event))
+        )
+
         return res.status(204).send()
     } catch (error) {
         res.status(500).json({
