@@ -10,17 +10,22 @@ async function connectRabbit() {
 
         const exchangeReminders = 'reminders'
         const exchangeObservations = 'observations'
-        const RemindersQueue = 'remindersQueue'
-        const ObservationsQueue = 'observationsQueue'
+        const remindersQueue = 'remindersQueue'
+        const observationsQueue = 'observationsQueue'
+        const exchangeChatGPT = 'chatGpt'
+        const chatGPTQueue = 'chatGpt'
 
         await channel.assertExchange(exchangeReminders, 'topic', { durable: true })
         await channel.assertExchange(exchangeObservations, 'topic', { durable: true })
-        
-        await channel.assertQueue(RemindersQueue, { durable: true });
-        await channel.assertQueue(ObservationsQueue, { durable: true });
+        await channel.assertExchange(exchangeChatGPT, 'topic', {durable: true})
 
-        await channel.bindQueue(ObservationsQueue, exchangeObservations);
-        await channel.bindQueue(RemindersQueue, exchangeReminders);
+        await channel.assertQueue(remindersQueue, { durable: true })
+        await channel.assertQueue(observationsQueue, { durable: true })
+        await channel.assertQueue(chatGPTQueue, {durable:true})
+
+        await channel.bindQueue(observationsQueue, exchangeObservations)
+        await channel.bindQueue(remindersQueue, exchangeReminders)
+        await channel.bindQueue(chatGPTQueue, exchangeChatGPT)
     } catch (error) {
         console.error('Erro ao conectar', error)
         throw error

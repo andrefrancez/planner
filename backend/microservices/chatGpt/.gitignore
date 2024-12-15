@@ -1,0 +1,36 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Dependências globais do sistema
+package-lock.json
+yarn.lock
+
+# Ambiente de desenvolvimento
+.env
+.env.local
+.env.*.local
+
+# Arquivos de log
+logs/
+*.log
+
+# Diretórios de cache
+.cache/
+
+# IDEs / Editores (ajuste conforme necessário)
+.vscode/
+.idea/
+
+# Sistema operacional
+.DS_Store
+
+# Outras pastas temporárias (por exemplo, builds)
+build/
+dist/
+
+# Arquivos de backup
+*~
+*.bak
+*.swp
