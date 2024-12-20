@@ -1,22 +1,46 @@
-import React, { useState } from 'react'
-import MonthNavbar from './MonthYearNavbar'
+import React, { Component } from 'react'
+import MonthYearNavbar from './MonthYearNavbar'
 import Week from './Week'
 
-const Planner = () => {
-    const [date, setDate] = useState(new Date())
+export default class Planner extends Component {
+    constructor(props) {
+        super(props)
 
-    return (
-        <div>
-            <MonthNavbar
-                currentMonth={date.getMonth() + 1}
-                currentYear={date.getFullYear()}
-            >
-            </MonthNavbar>
+        this.state = { date: new Date() }
+    }
+
+    lastWeek = () => {
+        this.setState((prevState) => {
+            const toLastWeek = new Date(prevState.date)
+            toLastWeek.setDate(prevState.date.getDate() - 7)
+            return { date: toLastWeek }
+        })
+    }
+
+    nextWeek = () => {
+        this.setState((prevState) => {
+            const toNextWeek = new Date(prevState.date)
+            toNextWeek.setDate(prevState.date.getDate() + 7)
+            return { date: toNextWeek }
+        })
+    }
+
+    render() {
+        const { date } = this.state
+
+        return (
             <div>
-                <Week></Week>
-            </div>
-        </div>
-    )
-}
+                <MonthYearNavbar
+                    currentMonth={date.getMonth() + 1}
+                    currentYear={date.getFullYear()}
+                    onLastWeek={this.lastWeek}
+                    onNextWeek={this.nextWeek}
+                >
+                </MonthYearNavbar>
 
-export default Planner
+                <Week currentDate={date}>
+                </Week>
+            </div>
+        )
+    }
+}
