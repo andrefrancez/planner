@@ -3,44 +3,33 @@ const db = require('../db')
 const {getChannel} = require('../../../config/rabbitmq.js')
 
 const createObservation = async (req, res) => {
-    const { description } = req.body
-    const { id: reminderId } = req.params;
+    const { description, scheduled_at} = req.body;
 
-    if (!description || !reminderId)
+    if (!description) {
         return res.status(400).json({
-            message: 'Descrição e Id do Lembretes são obrigatórios!'
+            message: 'A descrição é obrigatória!',
         })
+    }
 
     const observationId = uuidv4();
 
     try {
-        const [reminder] = await db.execute(
-            'SELECT * FROM reminders_db.tb_reminders WHERE id = ?',
-            [reminderId]
-        )
-
-        if (reminder.length === 0) {
-            return res.status(404).json({
-                message: 'Lembrete não encontrado!',
-            })
-        }
-
-        const [result] = await db.execute(
-            'INSERT INTO tb_observations (id, description, reminder_id) VALUES (?, ?, ?)',
-            [observationId, description, reminderId]
+        await db.execute(
+            'INSERT INTO tb_observations (id, description, scheduled_at) VALUES (?, ?, ?)',
+            [observationId, description, scheduled_at]
         )
 
         const newObservation = {
             id: observationId,
             description,
-            reminderId
+            scheduled_at
         }
 
-        const channel = getChannel()
+        const channel = getChannel();
         const event = {
             eventType: 'OBSERVATION_CREATE',
             timestamp: new Date().toISOString(),
-            payload: newObservation
+            payload: newObservation,
         }
 
         channel.publish(
@@ -49,21 +38,20 @@ const createObservation = async (req, res) => {
             Buffer.from(JSON.stringify(event))
         )
 
-        res.status(201).json(newObservation)
+        res.status(201).json(newObservation);
     } catch (error) {
+        console.error('Erro ao criar a observação:', error);
         res.status(500).json({
-            message: error.message
+            message: 'Erro interno no servidor. Tente novamente mais tarde.',
         })
     }
 }
 
-const getObservationsByReminderId = async (req, res) => {
-    const { reminderId } = req.params
 
+const getObservations = async (req, res) => {
     try {
         const [rows] = await db.execute(
-            'SELECT * FROM tb_observations WHERE reminder_id = ?',
-            [reminderId]            
+            'SELECT * FROM tb_observations'
         )
 
         res.status(200).json(rows)
@@ -162,7 +150,7 @@ const deleteObservation = async (req, res) => {
 
 module.exports = {
     createObservation,
-    getObservationsByReminderId,
+    getObservations,
     updateObservation,
     deleteObservation
 }

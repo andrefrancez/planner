@@ -1,12 +1,13 @@
 const { v4: uuidv4 } = require('uuid')
 const db = require('../db')
-const {getChannel} = require('../../../config/rabbitmq.js')
+const { getChannel } = require('../../../config/rabbitmq.js')
 
 const getAllReminders = async (req, res) => {
     try {
         const [rows] = await db.query(
             'SELECT * FROM tb_reminders'
         )
+
         res.status(200).json(rows)
     } catch (error) {
         res.status(500).json({
@@ -16,10 +17,10 @@ const getAllReminders = async (req, res) => {
 }
 
 const createReminders = async (req, res) => {
-    const { title, priority } = req.body
+    const { title, priority, scheduled_at } = req.body
 
     if (!title)
-        return RegExp.status(400).json(
+        return res.status(400).json(
             {
                 message: 'Titulo é obrigatórios!'
             })
@@ -27,15 +28,16 @@ const createReminders = async (req, res) => {
     const reminderId = uuidv4()
 
     try {
-        const [result] = await db.execute(
-            'INSERT INTO tb_reminders (id, title, priority) VALUES (?, ?, ?)',
-            [reminderId, title, priority || 'baixa']
+        await db.execute(
+            'INSERT INTO tb_reminders (id, title, priority, scheduled_at) VALUES (?, ?, ?, ?)',
+            [reminderId, title, priority || 'baixa', scheduled_at]
         )
 
         const newReminder = {
             id: reminderId,
             title,
-            priority: priority || 'baixa'
+            priority: priority || 'baixa',
+            scheduled_at
         }
 
         // RabbitMQ
@@ -54,6 +56,7 @@ const createReminders = async (req, res) => {
 
         res.status(201).json(newReminder)
     } catch (error) {
+        console.error("Erro ao criar lembrete:", error)
         res.status(500).json({
             message: error.message
         })
@@ -107,11 +110,6 @@ const deleteReminder = async (req, res) => {
     const { id } = req.params
 
     try {
-        const [observationsResult] = await db.execute(
-            'DELETE FROM observations_db.tb_observations WHERE reminder_id = ?',
-            [id]
-        )
-
         const [result] = await db.execute(
             'DELETE FROM tb_reminders WHERE id = ?',
             [id]
@@ -127,7 +125,7 @@ const deleteReminder = async (req, res) => {
         const event = {
             eventType: 'REMINDER_DELETE',
             timestamp: new Date().toISOString(),
-            payload: {reminderId: id}
+            payload: { reminderId: id }
         }
 
         channel.publish(

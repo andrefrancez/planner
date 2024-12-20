@@ -1,10 +1,10 @@
 const express = require('express')
-const {createObservation, getObservationsByReminderId, deleteObservation, updateObservation} = require('../controllers/observationsController.js')
+const {createObservation, getObservations, deleteObservation, updateObservation} = require('../controllers/observationsController.js')
 
 const router = express.Router()
 
-router.post('/reminders/:id/observations', createObservation)
-router.get('/reminders/:reminderId/observations', getObservationsByReminderId)
+router.post('/observations', createObservation)
+router.get('/observations', getObservations)
 router.patch('/observations/:id', updateObservation)
 router.delete('/observations/:id', deleteObservation)
 

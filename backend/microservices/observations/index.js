@@ -3,22 +3,24 @@ const cors = require('cors')
 const observationRoutes = require('./routes/observationsRoute.js')
 const {connectRabbit} = require('../../config/rabbitmq.js')
 
-const app = express()
+const app = express();
 
-app.use(express.json())
+
+app.use(cors());
+app.use(express.json());
 
 // RabbitMQ
-;(async () => {
+(async () => {
     try{
         await connectRabbit()
         console.log('Conectado!')
     }catch(error){
         console.error('Erro ao conectar!', error)
     }
-})()
+})();
 
-app.use(observationRoutes)
+app.use(observationRoutes);
 
 app.listen(5000, () => {
     console.log('Porta 5000')
-})
+});
