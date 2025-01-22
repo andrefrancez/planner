@@ -1,18 +1,14 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Row, Col } from 'react-bootstrap'
 import Day from './Day.js'
 import { getReminders } from '../api/Axios.js'
 
-export default class Week extends Component {
-    constructor(props) {
-        super(props)
+const Week = ({currentDate}) => {
+    const [reminders, setReminders] = useState([])
 
-        this.state = { reminders: {} }
-    }
-
-    componentDidMount() {
+    useEffect(() => {
         const loadReminders = async () => {
-            try {
+            try{
                 const data = await getReminders()
                 const remindersByDay = {}
                 const days = ['Domingo', 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado']
@@ -22,7 +18,7 @@ export default class Week extends Component {
                     const day = days[scheduledDate.getDay()]
                     const hour = `${scheduledDate.getHours()}:00`
 
-                    if (!remindersByDay[day]) remindersByDay[day] = {}
+                    if(!remindersByDay[day]) remindersByDay[day] = {}
 
                     remindersByDay[day][hour] = {
                         id: reminder.id,
@@ -31,43 +27,45 @@ export default class Week extends Component {
                     }
                 })
 
-                this.setState({
-                    reminders: remindersByDay
-                })
-
-            } catch (error) {
+                setReminders(remindersByDay)
+            } catch(error){
                 console.error(error)
             }
         }
 
         loadReminders()
-    }
+    }, [])
 
-    render() {
-        const { currentDate } = this.props
-        const days = ['Domingo', 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado']
-        const dayOfWeek = currentDate.getDate() - currentDate.getDay()
-        const currentDay = Array.from({ length: 7 }, (_, i) => {
-            const date = new Date(currentDate)
-            date.setDate(dayOfWeek + i)
-            return date
-        })
 
-        return (
-            <Row>
-                {currentDay.map((dayDate) => {
-                    const dayWeek = dayDate.getDay()
-                    const dayName = days[dayWeek]
-                    const remindersForDay = this.state.reminders[dayName] || {}
+    const days = ['Domingo', 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado']
+    const dayOfWeek = currentDate.getDate() - currentDate.getDay()
+    const currentDay = Array.from({length: 7}, (_, i) => {
+        const date = new Date(currentDate)
+        date.setDate(dayOfWeek + i)
+        return date
+    })
 
-                    return (
-                        <Col key={dayDate}>
-                            <Day day={dayName} dayDate={dayDate} reminders={remindersForDay} days={days} currentDay={currentDay}>
-                            </Day>
-                        </Col>
-                    )
-                })}
-            </Row>
-        )
-    }
+    return(
+        <Row>
+            {currentDay.map((dayDate) => {
+                const dayWeek = dayDate.getDay()
+                const dayName = days[dayWeek]
+                const remindersForDay = reminders[dayName] || {}
+
+                return (
+                    <Col key={dayDate}>
+                        <Day 
+                            day={dayName}
+                            dayDate={dayDate}
+                            reminders={remindersForDay}
+                            days={days}
+                            currentDay={currentDay}
+                        />
+                    </Col>
+                )
+            })}
+        </Row>
+    )
 }
+
+export default Week

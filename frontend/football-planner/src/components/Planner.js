@@ -1,46 +1,38 @@
-import React, { Component } from 'react'
-import MonthYearNavbar from './MonthYearNavbar'
-import Week from './Week'
+import React, {useState} from 'react'
+import MonthYearNavbar from './MonthYearNavbar.js'
+import Week from './Week.js'
 
-export default class Planner extends Component {
-    constructor(props) {
-        super(props)
+const Planner = () => {
+    const [date, setDate] = useState(new Date())
 
-        this.state = { date: new Date() }
-    }
-
-    lastWeek = () => {
-        this.setState((prevState) => {
-            const toLastWeek = new Date(prevState.date)
-            toLastWeek.setDate(prevState.date.getDate() - 7)
-            return { date: toLastWeek }
+    const lastWeek = () => {
+        setDate((prevDate) => {
+            const toLastWeek = new Date(prevDate)
+            toLastWeek.setDate(prevDate.getDate() - 7)
+            return toLastWeek
         })
     }
 
-    nextWeek = () => {
-        this.setState((prevState) => {
-            const toNextWeek = new Date(prevState.date)
-            toNextWeek.setDate(prevState.date.getDate() + 7)
-            return { date: toNextWeek }
+    const nextWeek = () => {
+        setDate((prevDate) => {
+            const toNextWeek = new Date(prevDate)
+            toNextWeek.setDate(prevDate.getDate() + 7)
+            return toNextWeek
         })
     }
 
-    render() {
-        const { date } = this.state
+    return (
+        <div>
+            <MonthYearNavbar 
+                currentMonth={date.getMonth() + 1}
+                currentYear={date.getFullYear()}
+                onLastWeek={lastWeek}
+                onNextWeek={nextWeek}
+            />
 
-        return (
-            <div>
-                <MonthYearNavbar
-                    currentMonth={date.getMonth() + 1}
-                    currentYear={date.getFullYear()}
-                    onLastWeek={this.lastWeek}
-                    onNextWeek={this.nextWeek}
-                >
-                </MonthYearNavbar>
-
-                <Week currentDate={date}>
-                </Week>
-            </div>
-        )
-    }
+            <Week currentDate={date} />
+        </div>
+    )
 }
+
+export default Planner
