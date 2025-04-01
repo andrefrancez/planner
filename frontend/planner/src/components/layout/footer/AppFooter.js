@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
-import './Footer.css'
+import './AppFooter.css'
 
-const Footer = () => {
+const AppFooter = () => {
     const year = new Date().getFullYear()
     const [country, setCountry] = useState('')
 
@@ -40,4 +40,4 @@ const Footer = () => {
     )
 }
 
-export default Footer
+export default AppFooter

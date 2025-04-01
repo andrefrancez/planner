@@ -1,0 +1,32 @@
+  .cancel-button {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #333;
+  }
+
+  .cancel-button:hover {
+    background-color: #e9ecef;
+  }
+
+  .submit-button {
+    background-color: #10a37f;
+    border: 1px solid #0d8a6d;
+    color: white;
+  }
+
+  .submit-button:hover {
+    background-color: #0d8a6d;
+  }
+
+  .submit-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+
+  .cancel-button, .submit-button {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+  }

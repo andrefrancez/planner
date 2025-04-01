@@ -1,12 +1,13 @@
 import React from "react"
 import Planner from './components/Planner.js'
-import Footer from "./components/Footer/Footer.js";
+import AppFooter from "./components/layout/footer/AppFooter.js";
+
 
 function App() {
   return (
     <div>
       <Planner />
-      <Footer />
+      <AppFooter />
     </div>
   );
 }

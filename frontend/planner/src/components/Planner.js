@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
-import MonthYearNavbar from './MonthYearNavbar.js'
 import Week from './Week.js'
+import MonthSelector from './common/MonthSelector.js'
 
 const Planner = () => {
     const [date, setDate] = useState(new Date())
@@ -23,7 +23,7 @@ const Planner = () => {
 
     return (
         <div>
-            <MonthYearNavbar 
+            <MonthSelector 
                 currentMonth={date.getMonth() + 1}
                 currentYear={date.getFullYear()}
                 onLastWeek={lastWeek}

@@ -1,0 +1,36 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #484e53d8;
+    color: white;
+    width: 100%;
+}
+
+.nav-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.nav-button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #2e3131c9;
+    border-radius: 4px;
+    background-color: transparent;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nav-button:hover {
+    background-color: #2e3131c9;
+}
