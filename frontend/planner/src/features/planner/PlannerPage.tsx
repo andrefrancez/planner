@@ -1,9 +1,10 @@
 import Planner from "./components/Planner";
+import PlannerNavbar from "./components/PlannerNavbar";
 
 const PlannerPage = () => {
     return(
         <div>
-            <h1>Planner</h1>
+            <PlannerNavbar />
             <Planner />
         </div>
     )
