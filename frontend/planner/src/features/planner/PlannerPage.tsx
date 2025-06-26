@@ -1,12 +1,8 @@
-import Planner from "./components/Planner";
-import PlannerNavbar from "./components/PlannerNavbar";
+import Planner from "./components/Planner/Planner.tsx";
 
 const PlannerPage = () => {
     return(
-        <div>
-            <PlannerNavbar />
-            <Planner />
-        </div>
+        <Planner />
     )
 };
 
