@@ -1,3 +1,5 @@
+# Estou refazendo o frontend e Backend!!
+
 ## Planner
 
 É um projeto inspirado no Tweek, projetado para ser um calendário semanal com funcionalidades específicas voltadas para a organização de eventos e tarefas. Ele permite que o usuário adicione lembretes em horários específicos, categorizados por prioridade, e associe observações a esses lembretes. Também é possível interagir com o ChatGPT.
