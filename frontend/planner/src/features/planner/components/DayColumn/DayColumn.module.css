@@ -1,0 +1,29 @@
+.reminderItemContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
+}
+
+.container {
+    background: #393240;
+    border-radius: 0.7rem;
+    padding: 1rem;
+}
+
+.container:hover {
+    background: #2F2C33;
+}
+
+.header {
+    margin-bottom: 1rem;
+}
+
+.currentDay {}
+
+.dayName {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    margin-bottom: 0.2rem;
+    color: #d1d5db;
+}

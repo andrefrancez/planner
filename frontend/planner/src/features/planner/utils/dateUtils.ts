@@ -1,6 +1,6 @@
 export const getDaysOfWeek = (date: Date): Date[] => {
   const start = new Date(date);
-  start.setDate(start.getDate() - start.getDate());
+  start.setDate(start.getDate() - start.getDay());
 
   return Array.from({ length: 7 }, (_, i) => {
     const day = new Date(start);
