@@ -4,6 +4,7 @@ import { priorityOrder, type Priority } from "../../utils/priorityUtils";
 import styles from "./DayColumn.module.css";
 import { formatDate } from "../../utils/dateUtils";
 import { ReminderItem } from "../ReminderItem/ReminderItem";
+import { AddReminderForm } from "../AddReminderForm/AddReminderForm";
 
 interface DayColumnProps {
     date: Date;
@@ -75,6 +76,8 @@ export const DayColumn = ({ date, dayIndex, reminders, onAddReminder, onToggleRe
                 {sortedReminders.map((reminder) => (
                    <ReminderItem key={reminder.id} reminder={reminder} onToggle={onToggleReminder} onEdit={onEditReminder} onDelete={onDeleteReminder} /> 
                 ))}
+
+                <AddReminderForm onAdd={(text, priority) => onAddReminder(dayIndex, text, priority)} />
             </div>
         </div>
     )
